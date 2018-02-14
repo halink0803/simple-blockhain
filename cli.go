@@ -51,7 +51,7 @@ func (cli *CLI) validateArgs() {
 func (cli *CLI) Run() {
 	cli.validateArgs()
 
-	addBlockCmd := flag.NewFlagSet("addBlock", flag.ExitOnError)
+	addBlockCmd := flag.NewFlagSet("addblock", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printChain", flag.ExitOnError)
 
 	addBlockData := addBlockCmd.String("data", "", "Block data")
