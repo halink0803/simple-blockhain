@@ -17,6 +17,10 @@ type Transaction struct {
 	Vout []TxOutput
 }
 
+func (tx Transaction) IsCoinbase() bool {
+	return len(tx.Vin) == 1 && len(tx.Vin[0].Txid) == 0 && tx.Vin[0].Vout == -1
+}
+
 // SetID sets ID of a transaction
 func (tx Transaction) SetID() {
 	var encoded bytes.Buffer
@@ -70,7 +74,7 @@ func NewUTXOTransaction(from, to string, amount int, bc *Blockchain) *Transactio
 	var inputs []TxInput
 	var outputs []TxOutput
 
-	acc, validOutputs := bc.FindSpendableOutput(from, amount)
+	acc, validOutputs := bc.FindSpendableOutputs(from, amount)
 
 	if acc < amount {
 		log.Panic("ERROR: not enough funds")
