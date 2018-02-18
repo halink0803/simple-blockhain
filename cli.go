@@ -8,18 +8,40 @@ import (
 	"strconv"
 )
 
-type CLI struct {
-	bc *Blockchain
+type CLI struct{}
+
+func (cli *CLI) createBlockchain(address string) {
+	bc := CreateBlockchain(address)
+	bc.db.Close()
+	fmt.Println("Done!")
+}
+
+func (cli *CLI) getBalance(address string) {
+	bc := NewBlockchain(address)
+	defer bc.db.Close()
+
+	balance := 0
+	UTXOs := bc.FindUTXO(address)
+
+	for _, out := range UTXOs {
+		balance += out.Value
+	}
+
+	fmt.Println("Balance of %s: %d\n", address, balance)
 }
 
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage: ")
-	fmt.Println(" addblock -data BLOCK_DATA - add a block to the blockchain")
-	fmt.Println(" printchain - print all the blocks of the blockchain")
+	fmt.Println(" getbalance -address ADDRESS - Get balance of ADDRESS")
+	fmt.Println(" createblockchain -address ADDRESS - Create a blockchain and send genesis block reward to ADDRESS")
+	fmt.Println(" printchain - Print all the blocks of the blockchain")
+	fmt.Println(" send -from FROM -to TO -amount AMOUNT - Send AMOUNT of coins from FROM address to TO address")
 }
 
 func (cli *CLI) printChain() {
-	bci := cli.bc.Iterator()
+	bc := NewBlockchain("")
+	defer bc.db.Close()
+	bci := bc.Iterator()
 	for {
 		block := bci.Next()
 
